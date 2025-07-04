@@ -14,7 +14,7 @@ jobs:
       - name: Checkout source code
         uses: actions/checkout@v3
 
-      # Step 2: Login to DockerHub
+      # Step 2: DockerHub Login
       - name: DockerHub Login
         uses: docker/login-action@v2
         with:
@@ -23,15 +23,13 @@ jobs:
 
       # Step 3: Build Docker image
       - name: Build Docker Image
-        run: |
-          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/appImage:latest .
+        run: docker build -t anujiitm2004/appimage:latest .
 
       # Step 4: Push image to DockerHub
       - name: Push to DockerHub
-        run: |
-          docker push ${{ secrets.DOCKERHUB_USERNAME }}/appImage:latest
+        run: docker push anujiitm2004/appimage:latest
 
-      # Step 5: SSH into EC2 and deploy
+      # Step 5: Deploy on EC2
       - name: Deploy on EC2
         uses: appleboy/ssh-action@v1.0.0
         with:
@@ -39,7 +37,7 @@ jobs:
           username: ubuntu
           key: ${{ secrets.EC2_KEY }}
           script: |
-            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/appImage:latest
-            docker stop appImage || true
-            docker rm appImage || true
-            docker run -d -p 3000:5000 --name appImage ${{ secrets.DOCKERHUB_USERNAME }}/appImage:latest
+            docker pull anujiitm2004/appimage:latest
+            docker stop appimage || true
+            docker rm appimage || true
+            docker run -d -p 3000:5000 --name appimage anujiitm2004/appimage:latest
